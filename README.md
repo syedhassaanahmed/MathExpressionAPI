@@ -14,5 +14,7 @@ Mathematical expression parser
 Example
 
   var e = new Expression("(A+B)/C");
+  
   double result = e.Evaluate(new { A = 4, B = 8, C = 3 });
+  
   Answer: 4
