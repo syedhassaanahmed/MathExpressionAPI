@@ -2,56 +2,46 @@
 
 namespace MathExpressionAPI
 {
-  public class Operator
-  {
-    public string Symbol { get; private set; }
-    public int Precedence { get; private set; }
-
-    Func<double, double> Unary;
-    Func<double, double, double> Binary;
-
-    public bool IsBinary
+    public class Operator
     {
-      get
-      {
-        return Binary != null;
-      }
-    }
+        public string Symbol { get; }
+        public int Precedence { get; private set; }
 
-    public Operator(string symbol, Func<double, double> f)
-    {
-      Symbol = symbol;
-      Precedence = int.MaxValue;
-      Unary = f;
-    }
+        readonly Func<double, double> _unary;
+        readonly Func<double, double, double> _binary;
 
-    public Operator(string symbol, int p, Func<double, double, double> f)
-    {
-      Symbol = symbol;
-      Precedence = p;
-      Binary = f;
-    }
+        public bool IsBinary => _binary != null;
 
-    public double Operate(double a, double? b = null)
-    {
-      if(IsBinary)
-      {
-        if(b == null)
+        public Operator(string symbol, Func<double, double> f)
         {
-          throw new MathException("Binary operator '" + Symbol + "' requires exactly 2 operands.");
+            Symbol = symbol;
+            Precedence = int.MaxValue;
+            _unary = f;
         }
-        
-        return Binary(a, b.Value);
-      }
-      else
-      {
-        return Unary(a);
-      }
-    }
 
-    public override string ToString()
-    {
-      return Symbol;
+        public Operator(string symbol, int p, Func<double, double, double> f)
+        {
+            Symbol = symbol;
+            Precedence = p;
+            _binary = f;
+        }
+
+        public double Operate(double a, double? b = null)
+        {
+            if (!IsBinary)
+                return _unary(a);
+
+            if (b == null)
+            {
+                throw new MathException("_binary operator '" + Symbol + "' requires exactly 2 operands.");
+            }
+
+            return _binary(a, b.Value);
+        }
+
+        public override string ToString()
+        {
+            return Symbol;
+        }
     }
-  }
 }
